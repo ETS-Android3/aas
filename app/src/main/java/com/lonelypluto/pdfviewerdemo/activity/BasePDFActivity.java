@@ -1,9 +1,14 @@
 package com.lonelypluto.pdfviewerdemo.activity;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.app.AlertDialog;
+import android.app.Instrumentation;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -17,7 +22,10 @@ import com.artifex.mupdfdemo.MuPDFReaderViewListener;
 import com.artifex.mupdfdemo.MuPDFView;
 import com.artifex.mupdfdemo.OutlineActivityData;
 import com.artifex.mupdfdemo.ReaderView;
+import com.lonelypluto.pdfviewerdemo.Contains;
+import com.lonelypluto.pdfviewerdemo.MainActivity;
 import com.lonelypluto.pdfviewerdemo.R;
+import com.lonelypluto.pdfviewerdemo.RealPathUtil;
 
 import java.util.concurrent.Executor;
 
@@ -33,12 +41,27 @@ public class BasePDFActivity extends AppCompatActivity {
 
     private MuPDFCore muPDFCore;// 加载mupdf.so文件
     private MuPDFReaderView muPDFReaderView;// 显示pdf的view
+
+//    private ActivityResultLauncher<Intent> mLauncherDocument =registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<Instrumentation.ActivityResult>() {
+//        @Override
+//        public void onActivityResult(Instrumentation.ActivityResult result) {
+//            if (result.getResultCode()==RESULT_OK){
+//                String path= RealPathUtil.getInstance().getRealPath(BasePDFActivity.this,result.getData().getData());
+//                muPDFCore = openFile(filePath);
+//                initView();
+//            }
+//        }
+//    });
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base_pdf);
-
-        initView();
+        openDocument();
+//        initView();
     }
 
     /**
@@ -48,7 +71,7 @@ public class BasePDFActivity extends AppCompatActivity {
 
         muPDFReaderView = (MuPDFReaderView)findViewById(R.id.open_pdf_mupdfreaderview);
         // 通过MuPDFCore打开pdf文件
-        muPDFCore = openFile(filePath);
+//        muPDFCore = openFile(filePath);
         // 判断如果core为空，提示不能打开文件
         if (muPDFCore == null) {
             AlertDialog alert = new AlertDialog.Builder(this).create();
@@ -127,5 +150,25 @@ public class BasePDFActivity extends AppCompatActivity {
             muPDFCore.onDestroy();
         muPDFCore = null;
         super.onDestroy();
+    }
+
+    void openDocument() {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType(Contains.MIME_TYPE_PDF);
+        startActivityForResult(intent,123);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode==123){
+            if (resultCode==RESULT_OK){
+                String path= RealPathUtil.getInstance().getRealPath(BasePDFActivity.this,data.getData());
+                muPDFCore = openFile(path);
+                initView();
+            }
+        }
     }
 }

@@ -13,7 +13,7 @@
 
     <include
         android:id="@+id/open_pdf_tools"
-        layout="@layout/pdf_tools"/>
+        layout="@layout/pdf_tools" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -25,34 +25,34 @@
             android:id="@+id/btn_change_hv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="横"
+            android:text="nằm ngang"
             />
 
         <Button
             android:id="@+id/btn_linkhighlightcolor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="设置超链接颜色"
+            android:text="đặt màu siêu liên kết"
             />
 
         <Button
             android:id="@+id/btn_searchtextcolor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="设置搜索文字颜色"
+            android:text="Đặt màu văn bản tìm kiếm"
             />
 
         <Button
             android:id="@+id/btn_set_paint_color"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="设置画笔颜色"
+            android:text="Đặt màu bàn chải"
             />
         <Button
             android:id="@+id/btn_set_paint_strokewidth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="设置画笔粗细"
+            android:text="Đặt độ dày của bàn chải"
             />
     </LinearLayout>
 

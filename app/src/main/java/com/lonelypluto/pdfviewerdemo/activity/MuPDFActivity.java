@@ -1,14 +1,16 @@
 package com.lonelypluto.pdfviewerdemo.activity;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -43,7 +45,9 @@ import com.artifex.mupdfdemo.ReaderView;
 import com.artifex.mupdfdemo.SearchTask;
 import com.artifex.mupdfdemo.SearchTaskResult;
 import com.lonelypluto.pdflibrary.utils.SharedPreferencesUtil;
+import com.lonelypluto.pdfviewerdemo.Contains;
 import com.lonelypluto.pdfviewerdemo.R;
+import com.lonelypluto.pdfviewerdemo.RealPathUtil;
 
 import java.util.concurrent.Executor;
 
@@ -96,7 +100,8 @@ public class MuPDFActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mupdf);
 
-        initView();
+//        initView();
+        openDocument();
     }
 
     /**
@@ -105,7 +110,7 @@ public class MuPDFActivity extends AppCompatActivity {
     private void initView() {
         SharedPreferencesUtil.init(getApplication());
 
-        muPDFReaderView = (MuPDFReaderView)findViewById(R.id.mu_pdf_mupdfreaderview);
+        muPDFReaderView = (MuPDFReaderView) findViewById(R.id.mu_pdf_mupdfreaderview);
 
         initToolsView();
         createPDF();
@@ -137,10 +142,10 @@ public class MuPDFActivity extends AppCompatActivity {
     }
 
     private void createPDF() {
-        mAlertBuilder  = new AlertDialog.Builder(this);
+        mAlertBuilder = new AlertDialog.Builder(this);
 
         // 通过MuPDFCore打开pdf文件
-        muPDFCore = openFile(filePath);
+//        muPDFCore = openFile(filePath);
         // 搜索设为空
         SearchTaskResult.set(null);
         // 判断如果core为空，提示不能打开文件
@@ -211,6 +216,7 @@ public class MuPDFActivity extends AppCompatActivity {
 
     /**
      * 打开文件
+     *
      * @param path 文件路径
      * @return
      */
@@ -235,7 +241,7 @@ public class MuPDFActivity extends AppCompatActivity {
     /**
      * 设置监听事件
      */
-    private void setListener(){
+    private void setListener() {
         // 设置MuPDFReaderView的监听事件
         setMuPDFReaderViewListener();
         // 设置页面拖动条监听事件
@@ -332,7 +338,7 @@ public class MuPDFActivity extends AppCompatActivity {
     /**
      * 设置MuPDFReaderView的监听事件
      */
-    private void setMuPDFReaderViewListener(){
+    private void setMuPDFReaderViewListener() {
         muPDFReaderView.setListener(new MuPDFReaderViewListener() {
             @Override
             public void onMoveToChild(int i) {
@@ -396,8 +402,14 @@ public class MuPDFActivity extends AppCompatActivity {
                 if (resultCode >= 0)
                     muPDFReaderView.setDisplayedViewIndex(resultCode);
                 break;
-        }
 
+            case 123:
+                if (resultCode == RESULT_OK) {
+                    String path = RealPathUtil.getInstance().getRealPath(MuPDFActivity.this, data.getData());
+                    muPDFCore = openFile(path);
+                    initView();
+                }
+        }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -495,6 +507,7 @@ public class MuPDFActivity extends AppCompatActivity {
 
     /**
      * 更新当前是第多少页
+     *
      * @param index
      */
     private void updatePageNumView(int index) {
@@ -523,6 +536,7 @@ public class MuPDFActivity extends AppCompatActivity {
 
     /**
      * 工具栏 - 注释点击事件
+     *
      * @param v
      */
     public void OnEditAnnotButtonClick(View v) {
@@ -532,6 +546,7 @@ public class MuPDFActivity extends AppCompatActivity {
 
     /**
      * 工具栏 - 复制点击事件
+     *
      * @param v
      */
     public void OnCopyTextButtonClick(View v) {
@@ -545,6 +560,7 @@ public class MuPDFActivity extends AppCompatActivity {
 
     /**
      * 工具栏 - 搜索框取消点击事件
+     *
      * @param v
      */
     public void OnCancelSearchButtonClick(View v) {
@@ -553,6 +569,7 @@ public class MuPDFActivity extends AppCompatActivity {
 
     /**
      * 工具栏 - 注释取消点击事件
+     *
      * @param v
      */
     public void OnCancelMoreButtonClick(View v) {
@@ -590,6 +607,7 @@ public class MuPDFActivity extends AppCompatActivity {
 
     /**
      * 工具栏 - 注释 - 高亮点击事件
+     *
      * @param v
      */
     public void OnHighlightButtonClick(View v) {
@@ -603,6 +621,7 @@ public class MuPDFActivity extends AppCompatActivity {
 
     /**
      * 工具栏 - 注释 - 底部画线点击事件
+     *
      * @param v
      */
     public void OnUnderlineButtonClick(View v) {
@@ -616,6 +635,7 @@ public class MuPDFActivity extends AppCompatActivity {
 
     /**
      * 工具栏 - 注释 - 废弃线点击事件
+     *
      * @param v
      */
     public void OnStrikeOutButtonClick(View v) {
@@ -629,6 +649,7 @@ public class MuPDFActivity extends AppCompatActivity {
 
     /**
      * 工具栏 - 注释 - 签字点击事件
+     *
      * @param v
      */
     public void OnInkButtonClick(View v) {
@@ -642,6 +663,7 @@ public class MuPDFActivity extends AppCompatActivity {
 
     /**
      * 工具栏 - 注释 - 删除注释点击事件
+     *
      * @param v
      */
     public void OnDeleteButtonClick(View v) {
@@ -654,6 +676,7 @@ public class MuPDFActivity extends AppCompatActivity {
 
     /**
      * 工具栏 - 注释 - 取消删除注释点击事件
+     *
      * @param v
      */
     public void OnCancelDeleteButtonClick(View v) {
@@ -666,6 +689,7 @@ public class MuPDFActivity extends AppCompatActivity {
 
     /**
      * 工具栏 - 注释 - 取消点击事件
+     *
      * @param v
      */
     public void OnCancelAcceptButtonClick(View v) {
@@ -688,6 +712,7 @@ public class MuPDFActivity extends AppCompatActivity {
 
     /**
      * 工具栏 - 注释 - 确定点击事件
+     *
      * @param v
      */
     public void OnAcceptButtonClick(View v) {
@@ -740,6 +765,7 @@ public class MuPDFActivity extends AppCompatActivity {
 
     /**
      * 设置按钮是否可点击
+     *
      * @param button
      * @param enabled
      */
@@ -750,6 +776,7 @@ public class MuPDFActivity extends AppCompatActivity {
 
     /**
      * 开始搜索
+     *
      * @param direction 搜索内容
      */
     private void search(int direction) {
@@ -762,6 +789,7 @@ public class MuPDFActivity extends AppCompatActivity {
 
     /**
      * 设置超链接高亮显示
+     *
      * @param highlight
      */
     private void setLinkHighlight(boolean highlight) {
@@ -774,6 +802,7 @@ public class MuPDFActivity extends AppCompatActivity {
 
     /**
      * 工具栏弹出提示信息
+     *
      * @param message 提示内容
      */
     private void showInfo(String message) {
@@ -1009,4 +1038,13 @@ public class MuPDFActivity extends AppCompatActivity {
     enum AcceptMode {
         Highlight, Underline, StrikeOut, Ink, CopyText
     }
+
+    void openDocument() {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType(Contains.MIME_TYPE_PDF);
+        startActivityForResult(intent, 123);
+    }
+
 }

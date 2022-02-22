@@ -1,8 +1,11 @@
 package com.lonelypluto.pdfviewerdemo.activity;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -28,7 +31,9 @@ import com.artifex.mupdfdemo.MuPDFView;
 import com.artifex.mupdfdemo.ReaderView;
 import com.artifex.mupdfdemo.SavePdf;
 import com.artifex.mupdfdemo.widget.VDHDeepLayout;
+import com.lonelypluto.pdfviewerdemo.Contains;
 import com.lonelypluto.pdfviewerdemo.R;
+import com.lonelypluto.pdfviewerdemo.RealPathUtil;
 
 /**
  * @Description: 电子签章 用itext提供的jar 网上我所能找到的demo插入图片后 再打开图片的位置都有偏差
@@ -69,7 +74,7 @@ public class SignActivity extends AppCompatActivity {
         protected void onPostExecute(Object o) {
             Log.e(TAG, "存储完成");
             try {
-                Toast.makeText(SignActivity.this, "图片插入成功", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignActivity.this, "Đã chèn hình ảnh thành công", Toast.LENGTH_SHORT).show();
 //                finish();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -82,7 +87,8 @@ public class SignActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign);
 
-        initView();
+//        initView();
+        openDocument();
     }
 
     private void initView() {
@@ -232,4 +238,27 @@ public class SignActivity extends AppCompatActivity {
         muPDFCore = null;
         super.onDestroy();
     }
+
+    void openDocument() {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType(Contains.MIME_TYPE_PDF);
+        startActivityForResult(intent, 123);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case 123:
+                if (resultCode == RESULT_OK) {
+                    String path = RealPathUtil.getInstance().getRealPath(SignActivity.this, data.getData());
+                    filePath=path;
+//                    muPDFCore = openFile(path);
+                    initView();
+                }
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
 }

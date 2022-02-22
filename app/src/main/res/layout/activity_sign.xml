@@ -15,8 +15,7 @@
         android:id="@+id/btn_sign"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="电子签章"
-        />
+        android:text="Chữ ký điện tử" />
 
     <com.artifex.mupdfdemo.widget.VDHDeepLayout
         android:id="@+id/VDHDeepLayout"
@@ -39,7 +38,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/btn_sign"
-        android:text="保存"
+        android:text="tiết kiệm"
         />
 
 </RelativeLayout>

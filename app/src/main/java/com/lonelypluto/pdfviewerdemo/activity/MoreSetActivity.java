@@ -1,5 +1,7 @@
 package com.lonelypluto.pdfviewerdemo.activity;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -44,7 +46,9 @@ import com.artifex.mupdfdemo.ReaderView;
 import com.artifex.mupdfdemo.SearchTask;
 import com.artifex.mupdfdemo.SearchTaskResult;
 import com.lonelypluto.pdflibrary.utils.SharedPreferencesUtil;
+import com.lonelypluto.pdfviewerdemo.Contains;
 import com.lonelypluto.pdfviewerdemo.R;
+import com.lonelypluto.pdfviewerdemo.RealPathUtil;
 
 import java.util.concurrent.Executor;
 
@@ -103,7 +107,15 @@ public class MoreSetActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_more_set);
 
-        initView();
+        //        initView();
+        openDocument();
+    }
+    void openDocument() {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType(Contains.MIME_TYPE_PDF);
+        startActivityForResult(intent, 123);
     }
 
     /**
@@ -204,7 +216,7 @@ public class MoreSetActivity extends AppCompatActivity {
         mAlertBuilder  = new AlertDialog.Builder(this);
 
         // 通过MuPDFCore打开pdf文件
-        muPDFCore = openFile(filePath);
+//        muPDFCore = openFile(filePath);
         // 搜索设为空
         SearchTaskResult.set(null);
         // 判断如果core为空，提示不能打开文件
@@ -460,6 +472,12 @@ public class MoreSetActivity extends AppCompatActivity {
                 if (resultCode >= 0)
                     muPDFReaderView.setDisplayedViewIndex(resultCode);
                 break;
+            case 123:
+                if (resultCode == RESULT_OK) {
+                    String path = RealPathUtil.getInstance().getRealPath(MoreSetActivity.this, data.getData());
+                    muPDFCore = openFile(path);
+                    initView();
+                }
         }
 
         super.onActivityResult(requestCode, resultCode, data);
